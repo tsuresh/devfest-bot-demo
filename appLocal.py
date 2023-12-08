@@ -4,6 +4,8 @@ from vertexai.preview.language_models import ChatModel
 import os
 import google.cloud.logging
 from dotenv import load_dotenv
+from google.oauth2 import service_account
+
 
 load_dotenv()
 
@@ -11,14 +13,16 @@ app = Flask(__name__)
 PROJECT_ID = os.environ.get('GCP_PROJECT') #Your Google Cloud Project ID
 LOCATION = os.environ.get('GCP_REGION')   #Your Google Cloud Project Region
 
+# optional: if you want to use a service account other than the default one
+credentials = service_account.Credentials.from_service_account_file('service-account-key.json')
 
-client = google.cloud.logging.Client(project=PROJECT_ID)
+client = google.cloud.logging.Client(project=PROJECT_ID, credentials=credentials)
 client.setup_logging()
 
 LOG_NAME = "flask-app-internal-logs"
 logger = client.logger(LOG_NAME)
 
-vertexai.init(project=PROJECT_ID, location=LOCATION)
+vertexai.init(project=PROJECT_ID, location=LOCATION, credentials=credentials)
 
 def load_context_from_text_file(filename):
     with open(filename, 'r') as file:
