@@ -5,9 +5,6 @@ WORKDIR /app
 
 COPY . ./
 
-#copy context.txt 
-COPY context.txt /app
-
 RUN pip install -r requirements.txt
 
 CMD ["python", "app.py"]
